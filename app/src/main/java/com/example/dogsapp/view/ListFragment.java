@@ -1,16 +1,14 @@
 package com.example.dogsapp.view;
 
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.navigation.NavDirections;
 import androidx.navigation.Navigation;
-
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
 
 import com.example.dogsapp.R;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -46,7 +44,8 @@ public class ListFragment extends Fragment {
     }
 
     void onGotoDetails() {
-        NavDirections action = ListFragmentDirections.actionDetail();
+        ListFragmentDirections.ActionDetail action = ListFragmentDirections.actionDetail();
+        action.setDogUuid(7);
         Navigation.findNavController(fab).navigate(action);
     }
 }
