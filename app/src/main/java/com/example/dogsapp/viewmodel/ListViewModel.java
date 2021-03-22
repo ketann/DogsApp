@@ -7,44 +7,59 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.MutableLiveData;
 
 import com.example.dogsapp.model.DogBreed;
+import com.example.dogsapp.model.DogsApiService;
 
-import java.util.ArrayList;
 import java.util.List;
+
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.observers.DisposableSingleObserver;
+import io.reactivex.schedulers.Schedulers;
+
 
 public class ListViewModel extends AndroidViewModel {
     public MutableLiveData<List<DogBreed>> dogs = new MutableLiveData<List<DogBreed>>();
     public MutableLiveData<Boolean> dogLoadError = new MutableLiveData<Boolean>();
     public MutableLiveData<Boolean> loading = new MutableLiveData<Boolean>();
 
+    private DogsApiService dogsApiService = new DogsApiService();
+    private CompositeDisposable disposable = new CompositeDisposable();
+
     public ListViewModel(@NonNull Application application) {
         super(application);
     }
 
     public void refresh() {
-        DogBreed dog1 = new DogBreed("1", "Corgi", "15 years", "", "", "", "");
-        DogBreed dog2 = new DogBreed("2", "Rotwailler", "10 years", "", "", "", "");
-        DogBreed dog3 = new DogBreed("3", "Labrador", "15 years", "", "", "", "");
-        DogBreed dog4 = new DogBreed("1", "Corgi", "15 years", "", "", "", "");
-        DogBreed dog5 = new DogBreed("2", "Rotwailler", "10 years", "", "", "", "");
-        DogBreed dog6 = new DogBreed("3", "Labrador", "15 years", "", "", "", "");
-        DogBreed dog7 = new DogBreed("1", "Corgi", "15 years", "", "", "", "");
-        DogBreed dog8 = new DogBreed("2", "Rotwailler", "10 years", "", "", "", "");
-        DogBreed dog9 = new DogBreed("3", "Labrador", "15 years", "", "", "", "");
+        fetchFromRemote();
+    }
 
-        ArrayList<DogBreed> dogsList = new ArrayList<>();
-        dogsList.add(dog1);
-        dogsList.add(dog2);
-        dogsList.add(dog3);
-        dogsList.add(dog4);
-        dogsList.add(dog5);
-        dogsList.add(dog6);
-        dogsList.add(dog7);
-        dogsList.add(dog8);
-        dogsList.add(dog9);
+    private void fetchFromRemote() {
+        loading.setValue(true);
+        disposable.add(
+                dogsApiService.getDogs()
+                        .subscribeOn(Schedulers.newThread())
+                        // for below method if we use rxjava latest dependency then get error so that user older dependency
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribeWith(new DisposableSingleObserver<List<DogBreed>>() {
+                            @Override
+                            public void onSuccess(@io.reactivex.annotations.NonNull List<DogBreed> dogBreeds) {
+                                dogs.setValue(dogBreeds);
+                                dogLoadError.setValue(false);
+                                loading.setValue(false);
+                            }
 
-        dogs.setValue(dogsList);
-        dogLoadError.setValue(false);
-        loading.setValue(false);
+                            @Override
+                            public void onError(@io.reactivex.annotations.NonNull Throwable e) {
+                                dogLoadError.setValue(true);
+                                loading.setValue(false);
+                                e.printStackTrace();
+                            }
+                        }));
+    }
 
+    @Override
+    protected void onCleared() {
+        super.onCleared();
+        disposable.clear();
     }
 }
