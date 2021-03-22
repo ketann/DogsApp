@@ -2,4 +2,9 @@
     <string name="app_name">DogsApp</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="data_not_found">Data not found!</string>
+    <string name="dog_name">Dog Name</string>
+    <string name="dog_lifespan">Dog Lifespan</string>
+    <string name="dog_purpose">Dog Purpose</string>
+    <string name="dog_temperament">Dog Temperament</string>
 </resources>
