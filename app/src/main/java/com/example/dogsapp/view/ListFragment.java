@@ -62,15 +62,19 @@ public class ListFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        //goto detail view
-        //ListFragmentDirections.ActionDetail action = ListFragmentDirections.actionDetail();
-        //Navigation.findNavController(view).navigate(action);
-
         viewModel = ViewModelProviders.of(this).get(ListViewModel.class);
         viewModel.refresh();
 
         recyclerViewDogList.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerViewDogList.setAdapter(dogsListAdapter);
+
+        refreshLayout.setOnRefreshListener(() -> {
+            recyclerViewDogList.setVisibility(View.GONE);
+            mTVDataNotFound.setVisibility(View.GONE);
+            loadingView.setVisibility(View.VISIBLE);
+            viewModel.refreshByPassCache();
+            refreshLayout.setRefreshing(false);
+        });
 
         observeViewModel();
     }

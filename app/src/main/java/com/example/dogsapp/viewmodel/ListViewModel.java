@@ -14,6 +14,7 @@ import com.example.dogsapp.model.DogBreed;
 import com.example.dogsapp.model.DogDao;
 import com.example.dogsapp.model.DogDatabase;
 import com.example.dogsapp.model.DogsApiService;
+import com.example.dogsapp.util.SharedPreferencesHelper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,6 +26,7 @@ import io.reactivex.schedulers.Schedulers;
 
 
 public class ListViewModel extends AndroidViewModel {
+
     public MutableLiveData<List<DogBreed>> dogs = new MutableLiveData<List<DogBreed>>();
     public MutableLiveData<Boolean> dogLoadError = new MutableLiveData<Boolean>();
     public MutableLiveData<Boolean> loading = new MutableLiveData<Boolean>();
@@ -35,13 +37,32 @@ public class ListViewModel extends AndroidViewModel {
     private AsyncTask<List<DogBreed>, Void, List<DogBreed>> insertTask;
     private AsyncTask<Void, Void, List<DogBreed>> retrieveTask;
 
+    private SharedPreferencesHelper prefHelper = SharedPreferencesHelper.getInstance(getApplication());
+    private long refreshTime = 5 * 60 * 1000 * 1000 * 1000L; // five minutes
+
     public ListViewModel(@NonNull Application application) {
         super(application);
     }
 
+    /*
+     * here we (refreshing every five minutes)check time is less then 5 minutes
+     * then fetch data from database and grater then 5 minutes then fetch data from api or from remote
+     * */
     public void refresh() {
-        //fetchFromRemote();
-        fetchFromDatabase();
+        long updateTime = prefHelper.getUpdateTime();
+        long currentTime = System.nanoTime();
+        if (updateTime != 0 && currentTime - updateTime < refreshTime) {
+            fetchFromDatabase();
+        } else {
+            fetchFromRemote();
+        }
+    }
+
+    /*
+    * Below method using direct fetch data from api or from remote
+    * */
+    public void refreshByPassCache(){
+        fetchFromRemote();
     }
 
     private void fetchFromDatabase() {
@@ -55,7 +76,7 @@ public class ListViewModel extends AndroidViewModel {
         disposable.add(
                 dogsApiService.getDogs()
                         .subscribeOn(Schedulers.newThread())
-                        // for below method if we use rxjava latest dependency then get error so that user older dependency
+                        // for below method if we use rxjava latest dependency then get error so that use older dependency
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribeWith(new DisposableSingleObserver<List<DogBreed>>() {
                             @Override
@@ -119,6 +140,7 @@ public class ListViewModel extends AndroidViewModel {
         protected void onPostExecute(List<DogBreed> dogBreeds) {
             super.onPostExecute(dogBreeds);
             dogRetrieved(dogBreeds);
+            prefHelper.saveUpdateTime(System.nanoTime());
         }
     }
 
