@@ -6,6 +6,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.MutableLiveData;
 import androidx.room.Database;
@@ -14,6 +15,7 @@ import com.example.dogsapp.model.DogBreed;
 import com.example.dogsapp.model.DogDao;
 import com.example.dogsapp.model.DogDatabase;
 import com.example.dogsapp.model.DogsApiService;
+import com.example.dogsapp.util.NotificationHelper;
 import com.example.dogsapp.util.SharedPreferencesHelper;
 
 import java.util.ArrayList;
@@ -84,6 +86,7 @@ public class ListViewModel extends AndroidViewModel {
                                 insertTask = new InsertDogTask();
                                 insertTask.execute(dogBreeds);
                                 Toast.makeText(getApplication(), "Dogs retrieved from end point", Toast.LENGTH_SHORT).show();
+                                NotificationHelper.getInstance(getApplication()).createNotification();
                             }
 
                             @Override
