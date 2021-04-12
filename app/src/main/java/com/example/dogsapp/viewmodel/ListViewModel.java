@@ -1,6 +1,7 @@
 package com.example.dogsapp.viewmodel;
 
 import android.app.Application;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.Toast;
@@ -51,6 +52,7 @@ public class ListViewModel extends AndroidViewModel {
      * then fetch data from database and grater then 5 minutes then fetch data from api or from remote
      * */
     public void refresh() {
+        checkCacheDuration();
         long updateTime = prefHelper.getUpdateTime();
         long currentTime = System.nanoTime();
         if (updateTime != 0 && currentTime - updateTime < refreshTime) {
@@ -61,10 +63,25 @@ public class ListViewModel extends AndroidViewModel {
     }
 
     /*
-    * Below method using direct fetch data from api or from remote
-    * */
-    public void refreshByPassCache(){
+     * Below method using direct fetch data from api or from remote
+     * */
+    public void refreshByPassCache() {
         fetchFromRemote();
+    }
+
+    /*
+    * Below method for getting cache duration from setting screen and store in sharedPreference
+    * */
+    private void checkCacheDuration() {
+        String cachePreference = prefHelper.getCacheDuration();
+        if (!cachePreference.equals("")) {
+            try {
+                int cachePreferenceInt = Integer.parseInt(cachePreference);
+                refreshTime = cachePreferenceInt * 1000 * 1000 * 1000L;
+            } catch (NumberFormatException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     private void fetchFromDatabase() {
