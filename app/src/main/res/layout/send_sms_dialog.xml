@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+        <variable
+            name="smsInfo"
+            type="com.example.dogsapp.model.SmsInfo" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <EditText
+            android:id="@+id/smsDestination"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/to"
+            android:inputType="number"
+            android:lines="1"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <EditText
+            android:id="@+id/smsText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_5"
+            android:inputType="textMultiLine"
+            android:text="@{smsInfo.text}"
+            app:layout_constraintTop_toBottomOf="@+id/smsDestination" />
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_5"
+            android:iamgeUrl="@{smsInfo.imageUrl}"
+            android:scaleType="center"
+            app:layout_constraintTop_toBottomOf="@+id/smsText" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

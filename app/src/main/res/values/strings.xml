@@ -7,4 +7,8 @@
     <string name="dog_lifespan">Dog Lifespan</string>
     <string name="dog_purpose">Dog Purpose</string>
     <string name="dog_temperament">Dog Temperament</string>
+    <string name="send_sms">Send SMS</string>
+    <string name="setting">Setting</string>
+    <string name="share">Share</string>
+    <string name="to">To:</string>
 </resources>
