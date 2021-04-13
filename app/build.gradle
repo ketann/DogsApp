@@ -95,5 +95,6 @@ dependencies {
     implementation "androidx.preference:preference:$preference_version"
 
     implementation 'com.android.support:multidex:1.0.3'
+    implementation "com.google.firebase:firebase-core:16.0.8"
 
 }
